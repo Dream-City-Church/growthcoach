@@ -1,6 +1,7 @@
 var gcUserJson = loadGrowthCoachUser();
 var currentTab = 0; // Current tab is set to be the first tab (0)
 var currentChatHistory=[];
+const chatEndpointUrl = 'https://prod-28.southcentralus.logic.azure.com:443/workflows/8897a84bc942409e9d960e0f264d4cef/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=k4_xK1LfAx38_kC_KkKcwiLccqD2niWaVPJZ_bZ754M';
 
 
 function growthCoachLaunch(){
@@ -8,9 +9,10 @@ function growthCoachLaunch(){
         // New User Page
         //document.getElementById("growthcoach").innerHTML = gcNewUserForm;
         //showTab(currentTab); // Display the current tab
-        startChat();
+        startChat('newUser');
     }else{
         // Load Main App Page
+        startChat('newUser');
     }
 }
 
@@ -31,6 +33,7 @@ function saveGrowthCoachUser(gcUserJSON){
 
 // Create a chat window that shows sent and received chats, with a text box to send a chat to a Logic App endpoint
 function startChat(chatType){
+    console.log('startChat');
     document.getElementById("growthcoach").innerHTML += `<div id="chatWindow"></div><div id="chatInput"></div><div id="chatSend"></div>`;
     var chatWindow = document.getElementById("chatWindow");
     var chatInput = document.getElementById("chatInput");
@@ -77,6 +80,7 @@ function startChat(chatType){
 }
 
 function sendChat(chatInputTextValue,chatType) {
+    console.log('sendChat');
     //update chat history
     if(chatInputTextValue != "") {
         currentChatHistory.push({"Content":chatInputTextValue,"Role":"User"});
@@ -92,7 +96,7 @@ function sendChat(chatInputTextValue,chatType) {
         body: JSON.stringify( params ),
         headers: {'Content-Type': 'application/json'}
     };
-    fetch('',options)
+    fetch(chatEndpointUrl,options)
     .then(response => response.json())
     .then(function (data) {
         if(data.status=="ok"){
@@ -152,7 +156,14 @@ function showTab(n) {
             var formObj ={};
             for(var i = 0 ; i < elements.length ; i++){
                 var item = elements.item(i);
-                formObj[item.name] = item.value;
+                if (item.type === 'radio') {
+                    if (item.checked === true) {
+                        // get value, set checked flag or do whatever you need to
+                        formObj[item.name] = item.value;
+                    }
+                } else {
+                    formObj[item.name] = item.value;
+                }
             }
 
             //Save to localStorage
