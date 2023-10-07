@@ -6,14 +6,52 @@ var currentChatHistory=[];
 const chatEndpointUrl = 'https://prod-28.southcentralus.logic.azure.com:443/workflows/8897a84bc942409e9d960e0f264d4cef/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=k4_xK1LfAx38_kC_KkKcwiLccqD2niWaVPJZ_bZ754M';
 
 
-function growthCoachLaunch(){
-    if(gcUserJson == null){
+function growthCoachLaunch(action){
+    if((gcUserJson == null || gcUserJson == '') & action != 'homeScreen'){
         // New User Page
         document.getElementById("growthcoach").innerHTML = gcNewUserForm;
         showTab(currentTab); // Display the current tab
     }else{
         // Load Main App Page
+        var gcHomeLayout = `
+            <div id="salutation"><h2>Hi, ${gcUserJson.first_name}!</h2></div>
+            <div id="goals-card" class="card"><h3>Your Goals</h3></div>
+            <div id="reading-plan-card" class="card"><h3>Reading Plan</h3></div>
+            <div id="chat-card" class="card"><div id="chat-card-header" data="up"><span class="arrow up"></span>Chat with Growth Coach<span class="arrow up"></span></div></div>
+            `;
+
         document.getElementById("growthcoach").innerHTML = gcHomeLayout;
+
+        document.getElementById("chat-card-header").addEventListener("click", function(){
+            console.log('chat header click detected');
+            // if the chat card header has a data value of up
+            if(document.getElementById("chat-card-header").getAttribute("data") == "up") {
+                startChat('generalChat',gcUserJson.first_name+' wants to chat about something. Ask them what they would like to discuss.');
+                
+            } else {
+                document.getElementById("chat-card-header").setAttribute("data","up");
+                document.getElementById("chat-card").style.bottom = null;
+                document.getElementById("chat-card").innerHTML = `<div id="chat-card-header" data="up"><span class="arrow up"></span>Chat with Growth Coach<span class="arrow up"></span></div>`;
+            }
+        });
+
+        // for each goal, add to the goals card
+        var goalsCard = document.getElementById("goals-card");
+        gcUserGoals.forEach(function(goal) {
+            console.log('adding goal');
+            goalsCard.innerHTML += `<div class="goal" id="${goal.goal_id}" class="goal-${goal.goal_id}"><span class="goal-title">${goal.goal_title}</span><br /><span class="goal-checkin">Next check in: ${goal.goal_check_in_days} days</span></div>`;
+        });
+
+        // add event listener to each goal to detect click
+        var goals = document.querySelectorAll('.goal');
+
+        goals.forEach(function(goal) {
+            goal.addEventListener('click', function() {
+                console.log('goal click detected');
+                var goalTitle = goal.querySelector('.goal-title').innerHTML;
+                startChat('goalCheckin',gcUserJson.first_name+' wants to chat about their previously set goal of '+goalTitle+'. As them what they would like to discuss about the goal.');
+            });
+        });
     }
 }
 
@@ -57,9 +95,17 @@ function growthCoachGoals(goalActionType,goalArray) {
 }
 
 // Create a chat window that shows sent and received chats, with a text box to send a chat to a Logic App endpoint
-function startChat(chatType){
+function startChat(chatType,chatMessage){
     console.log('startChat');
-    document.getElementById("growthcoach").innerHTML += `<div id="chatWindow"></div><div id="chatInput"></div>`;
+    if(document.getElementById("chat-card")) {
+        var arrowUps = document.querySelectorAll('.arrow.up')
+        arrowUps.forEach((arrowUp) => {arrowUp.classList.replace('up','down');})
+        document.getElementById("chat-card-header").setAttribute("data","down");
+        document.getElementById("chat-card").insertAdjacentHTML("beforeend", `<div id="chatWindow"></div><div id="chatInput"></div>`);
+        document.getElementById("chat-card").style.bottom = 0;
+    } else {
+        document.getElementById("growthcoach").innerHTML += `<div id="chatWindow"></div><div id="chatInput"></div>`;
+    }
     var chatWindow = document.getElementById("chatWindow");
     var chatInput = document.getElementById("chatInput");
     
@@ -80,7 +126,11 @@ function startChat(chatType){
     var chatSend = document.getElementById("chatSend");
     
     // Send initial chat summary to ChatGPT
-    sendChat("",chatType);
+    if(!chatMessage) {
+        sendChat("",chatType);
+    } else {
+        sendChat(chatMessage,chatType);
+    }
 
     // Add an event listener to the send button
     chatSend.addEventListener("click", function(){
@@ -92,7 +142,7 @@ function startChat(chatType){
         // Add the chat to the chat window
         chatWindowContent.innerHTML += `<div style="width: 100%; display: flex; flex-direction: column;">
             <div style="width: 100%; text-align: right;">
-                <div style="display: inline-block; background-color: #c3e88d; padding: 10px; border-radius: 5px;" class="userChatMessage">
+                <div class="userChatMessage">
                     ${chatInputTextValue}
                 </div>
             </div>
@@ -123,6 +173,7 @@ function sendChat(chatInputTextValue,chatType) {
     const params = {
         "chatHistory": currentChatHistory,
         "gcUser": userInfo,
+        "gcGoals": gcUserGoals,
         "chatType": chatType
     };
     const options = {
@@ -140,7 +191,7 @@ function sendChat(chatInputTextValue,chatType) {
             var chatWindowContent = document.getElementById("chatWindowContent");
             chatWindowContent.innerHTML += `<div style="width: 100%; display: flex; flex-direction: column;">
                 <div style="width: 100%;">
-                    <div style="display: inline-block; background-color: #82aaff; padding: 10px; border-radius: 5px;" class="botChatMessage">
+                    <div class="botChatMessage">
                         ${data.response}
                     </div>
                 </div>
@@ -148,7 +199,7 @@ function sendChat(chatInputTextValue,chatType) {
         }
         if(data.goal_action == "add") {
             // save goals to localStorage
-            growthCoachGoals("add",data.function_data.goals);
+            growthCoachGoals("add",data.function_data);
 
             // remove chat input window and replace with close button
             document.getElementById("chatInput").innerHTML = `<button id="chatClose" style="width: 100%;">Close</button>`;
@@ -158,7 +209,8 @@ function sendChat(chatInputTextValue,chatType) {
             chatClose.addEventListener("click", function(){
                 console.log('close button click detected');
                 // remove chat window
-                document.getElementById('growthcoach').innerHTML = gcHomeLayout;
+
+                growthCoachLaunch('homeScreen');
             });
         }
     })
@@ -218,6 +270,7 @@ function showTab(n) {
             //Save to localStorage
             saveGrowthCoachUser(formObj);
             gcNewUserInfo = formObj;
+            gcUserJson = formObj;
             document.getElementById('growthcoach').innerHTML = "";
             startChat('newUser');
             
@@ -365,12 +418,5 @@ var gcNewUserForm = `
     </div>
 
     </form>`;
-
-var gcHomeLayout = `
-<div id="salutation">Hi, ${gcUserJson.first_name}!</div>
-<div id="goals-card" class="card"><h3>Your Goals</h3></div>
-<div id="reading-plan-card" class="card"><h3>Reading Plan</h3></div>
-<div id="chat-card"></div>
-`;
 
 window.onload = growthCoachLaunch;

@@ -2,6 +2,7 @@
   --primary: #9FD8DB;
   --secondary: #1B4156;
   --tertiary: #F9735B;
+  --quatinary: #23561B;
   --text-gray: #777777;
 }
 
@@ -15,10 +16,20 @@ body {
   overflow: hidden;
 }
 
+h2 {
+  margin: 0.5rem;
+  font-size: 2.25rem;
+}
+
 h3 {
   color: white;
   font-size: 1.5rem;
   line-height: 1.5rem;
+}
+
+.card h3 {
+  color: var(--secondary);
+  margin-top: 0;
 }
 
 #growthcoach {
@@ -41,6 +52,7 @@ h3 {
     font-size: 0.9rem;
     border-radius: 0.25rem;
     border: none;
+    border: 1px solid var(--text-gray);
   }
   
   /* Mark input boxes that gets an error on validation: */
@@ -83,6 +95,7 @@ h3 {
     color: white;
     border: none;
     border-radius: 0.25rem;
+    cursor: pointer;
 }
 
 #regForm label {
@@ -122,6 +135,7 @@ div#salutation {
   border-radius: 1rem;
   min-height: 1rem;
   margin-bottom: 2rem;
+  box-shadow: 0.25rem 0.25rem 0.5rem rgba(0,0,0,0.2);
 }
 
 div#chat-card {
@@ -130,4 +144,84 @@ div#chat-card {
   z-index: 999;
   height: 90vh;
   bottom: -90vh;
+  overflow: hidden;
+}
+
+#chat-card #chatWindow {
+  max-height: 96%;
+}
+
+.botChatMessage {
+  background-color: var(--secondary);
+  color: white;
+  padding: 1rem 2rem;
+  margin: 1rem 0;
+  border-radius: 1rem;
+  line-height:1.25rem;
+}
+
+.botChatMessage h2 {
+  font-size: 1.5rem;
+  margin: 0;
+}
+
+.userChatMessage {
+  background-color: var(--quatinary);
+  color: white;
+  padding: 1rem 2rem;
+  margin: 1rem 0;
+  border-radius: 1rem;
+  line-height: 1.25rem;
+}
+
+.goal {
+  margin: 2rem;
+  border-left: 2px solid var(--tertiary);
+  padding-left: 2rem;
+  cursor: pointer;
+}
+
+span.goal-title {
+  font-size: 1.25rem;
+  font-weight: bold;
+}
+
+span.goal-checkin {
+  font-style: italic;
+  color: var(--text-gray);
+}
+
+div#chat-card-header {
+  text-align: center;
+  color: var(--text-gray);
+  padding: 0.5rem;
+  cursor: pointer;
+}
+
+.arrow {
+  border: solid var(--text-gray);
+  border-width: 0 2px 2px 0;
+  display: inline-block;
+  padding: 3px;
+  margin: 0 2rem;
+}
+
+.right {
+  transform: rotate(-45deg);
+  -webkit-transform: rotate(-45deg);
+}
+
+.left {
+  transform: rotate(135deg);
+  -webkit-transform: rotate(135deg);
+}
+
+.up {
+  transform: rotate(-135deg);
+  -webkit-transform: rotate(-135deg);
+}
+
+.down {
+  transform: rotate(45deg);
+  -webkit-transform: rotate(45deg);
 }
