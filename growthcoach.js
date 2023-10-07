@@ -170,7 +170,8 @@ function showTab(n) {
 
             //Save to localStorage
             saveGrowthCoachUser(formObj);
-            growthCoachLaunch();
+            document.getElementById('growthcoach').innerHTML = "";
+            startChat('newUser');
             
             return false;
         }
@@ -301,6 +302,7 @@ var gcNewUserForm = `
 
     <!-- Circles which indicates the steps of the form: -->
     <div style="text-align:center;margin-top:40px;">
+    <span class="step"></span>
     <span class="step"></span>
     <span class="step"></span>
     <span class="step"></span>
