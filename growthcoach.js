@@ -1,4 +1,5 @@
 var gcUserJson = loadGrowthCoachUser();
+var gcUserGoals = loadGrowthCoachGoals();
 var gcNewUserInfo = {};
 var currentTab = 0; // Current tab is set to be the first tab (0)
 var currentChatHistory=[];
@@ -29,6 +30,30 @@ function saveGrowthCoachUser(gcUserJSON){
     // Convert JSON to String and save to localStorage
     localStorage.setItem("gcUser", JSON.stringify(gcUserJSON));
     loadGrowthCoachUser();
+}
+
+function loadGrowthCoachGoals() {
+    if(localStorage.getItem("gcGoals") == null){
+        return [];
+    } else {
+        // Load from local storage and convert string to JSON
+        return JSON.parse(localStorage.getItem("gcGoals"));
+    }
+}
+
+function saveGrowthCoachGoals(gcGoalsToSave) {
+    localStorage.setItem("gcGoals", JSON.stringify(gcGoalsToSave));
+}
+
+function growthCoachGoals(goalActionType,goalArray) {
+    if(goalActionType == "add") {
+        // merge values from goalArray into gcUserGoals
+        gcUserGoals = gcUserGoals.concat(goalArray);
+        saveGrowthCoachGoals(gcUserGoals);
+    } else if(goalActionType == "edit") {
+    } else if(goalActionType == "complete") {
+    } else if(goalActionType == "delete") {
+    }
 }
 
 // Create a chat window that shows sent and received chats, with a text box to send a chat to a Logic App endpoint
@@ -120,6 +145,9 @@ function sendChat(chatInputTextValue,chatType) {
                     </div>
                 </div>
             </div>`;
+        }
+        if(data.goal_action == "add") {
+            growthCoachGoals("add",data.function_data.goals);
         }
     })
 }
