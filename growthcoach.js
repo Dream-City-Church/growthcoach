@@ -33,15 +33,15 @@ function saveGrowthCoachUser(gcUserJSON){
 // Create a chat window that shows sent and received chats, with a text box to send a chat to a Logic App endpoint
 function startChat(chatType){
     console.log('startChat');
-    document.getElementById("growthcoach").innerHTML += `<div id="chatWindow"></div><div id="chatInput"></div><div id="chatSend"></div>`;
+    document.getElementById("growthcoach").innerHTML += `<div id="chatWindow"></div><div id="chatInput"></div>`;
     var chatWindow = document.getElementById("chatWindow");
     var chatInput = document.getElementById("chatInput");
-    var chatSend = document.getElementById("chatSend");
+    
 
     // Create the chat window
     chatWindow.innerHTML = `
         <div id="chatWindow" style="height: 100%; overflow-y: scroll; overflow-x: hidden;">
-            <div id="chatWindowContent" style="display: flex; flex-direction: column-reverse;"></div>
+            <div id="chatWindowContent" style="display: flex; flex-direction: column;"></div>
         </div>`;
 
     // Create the chat input and send button
@@ -50,6 +50,8 @@ function startChat(chatType){
             <input id="chatInputText" style="width: 100%;"/>
             <button id="chatSend" style="width: 100%;">Send</button>
         </div>`;
+
+    var chatSend = document.getElementById("chatSend");
     
     // Send initial chat summary to ChatGPT
     sendChat("",chatType);
@@ -60,9 +62,6 @@ function startChat(chatType){
         var chatInputText = document.getElementById("chatInputText");
         var chatWindowContent = document.getElementById("chatWindowContent");
         var chatInputTextValue = chatInputText.value;
-
-        // Clear the chat input text
-        chatInputText.value = "";
 
         // Add the chat to the chat window
         chatWindowContent.innerHTML += `<div style="width: 100%; display: flex; flex-direction: column;">
@@ -76,6 +75,9 @@ function startChat(chatType){
         
         // Send the chat to the Logic App endpoint
         sendChat(chatInputTextValue,chatType);
+
+        // Clear the chat input text
+        chatInputText.value = "";
     });
 }
 
@@ -83,7 +85,7 @@ function sendChat(chatInputTextValue,chatType) {
     console.log('sendChat');
     //update chat history
     if(chatInputTextValue != "") {
-        currentChatHistory.push({"Content":chatInputTextValue,"Role":"User"});
+        currentChatHistory.push({"content":chatInputTextValue,"role":"user"});
     }
 
     const params = {
@@ -101,7 +103,7 @@ function sendChat(chatInputTextValue,chatType) {
     .then(function (data) {
         if(data.status=="ok"){
             //update chat history
-            currentChatHistory.push({"Content":data.response,"Role":"Assistant"});
+            currentChatHistory.push({"content":data.response,"role":"assistant"});
             //update chat window
             var chatWindowContent = document.getElementById("chatWindowContent");
             chatWindowContent.innerHTML += `<div style="width: 100%; display: flex; flex-direction: column;">
@@ -168,6 +170,7 @@ function showTab(n) {
 
             //Save to localStorage
             saveGrowthCoachUser(formObj);
+            growthCoachLaunch();
             
             return false;
         }
