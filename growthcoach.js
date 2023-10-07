@@ -13,7 +13,7 @@ function growthCoachLaunch(){
         showTab(currentTab); // Display the current tab
     }else{
         // Load Main App Page
-        startChat('newUser');
+        document.getElementById("growthcoach").innerHTML = gcHomeLayout;
     }
 }
 
@@ -147,7 +147,19 @@ function sendChat(chatInputTextValue,chatType) {
             </div>`;
         }
         if(data.goal_action == "add") {
+            // save goals to localStorage
             growthCoachGoals("add",data.function_data.goals);
+
+            // remove chat input window and replace with close button
+            document.getElementById("chatInput").innerHTML = `<button id="chatClose" style="width: 100%;">Close</button>`;
+            
+            // add event listener onto close button
+            var chatClose = document.getElementById("chatClose");
+            chatClose.addEventListener("click", function(){
+                console.log('close button click detected');
+                // remove chat window
+                document.getElementById('growthcoach').innerHTML = gcHomeLayout;
+            });
         }
     })
 }
@@ -354,5 +366,11 @@ var gcNewUserForm = `
 
     </form>`;
 
+var gcHomeLayout = `
+<div id="salutation">Hi, ${gcUserJson.first_name}!</div>
+<div id="goals-card" class="card"><h3>Your Goals</h3></div>
+<div id="reading-plan-card" class="card"><h3>Reading Plan</h3></div>
+<div id="chat-card"></div>
+`;
 
 window.onload = growthCoachLaunch;
