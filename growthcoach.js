@@ -7,9 +7,8 @@ const chatEndpointUrl = 'https://prod-28.southcentralus.logic.azure.com:443/work
 function growthCoachLaunch(){
     if(gcUserJson == null){
         // New User Page
-        //document.getElementById("growthcoach").innerHTML = gcNewUserForm;
-        //showTab(currentTab); // Display the current tab
-        startChat('newUser');
+        document.getElementById("growthcoach").innerHTML = gcNewUserForm;
+        showTab(currentTab); // Display the current tab
     }else{
         // Load Main App Page
         startChat('newUser');
@@ -53,10 +52,11 @@ function startChat(chatType){
         </div>`;
     
     // Send initial chat summary to ChatGPT
-    sendChat("",chatType)    
+    sendChat("",chatType);
 
     // Add an event listener to the send button
     chatSend.addEventListener("click", function(){
+        console.log('send button click detected');
         var chatInputText = document.getElementById("chatInputText");
         var chatWindowContent = document.getElementById("chatWindowContent");
         var chatInputTextValue = chatInputText.value;
