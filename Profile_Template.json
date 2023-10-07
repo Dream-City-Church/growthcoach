@@ -1,0 +1,73 @@
+{
+    "First_Name": "John",
+    "Last_Name": "Doe",
+    "Email_Address": "johndoe@gmail.com",
+    "Phone_Number": "1234567890",
+    "Demographics": {
+        "Gender": "Male",
+        "Birthdate": "01/01/2000",
+        "Age": "20",
+        "Marital_Status": "Single",
+        "Kids_Under_10": "Yes",
+        "Kids_10_to_18": "Yes",
+        "Kids_Out_Of_House": "No"
+    },
+    "Journey_Markers": {
+        "Time_As_Christian": "1-5 Years",
+        "Attends_Church": "Onnce a Month",
+        "Reads_Bible": "Sometimes",
+        "Prays": "Sometimes",
+        "Small_Group": "No",
+        "Serve": "No",
+        "Giving": "Occasional"
+    },
+    "Goals": [
+        {
+            "Goal": "Grow in my faith",
+            "Goal_Type": "Spiritual",
+            "Goal_Priority": "High",
+            "Goal_Status": "In Progress",
+            "Goal_Start_Date": "01/01/2020",
+            "Goal_Next_Check_Date": "01/01/2020",
+            "Goal_Complete_Date": "",
+            "Goal_Notes": "I want to grow in my faith"
+        },
+        {
+            "Goal": "Get out of debt",
+            "Goal_Type": "Financial",
+            "Goal_Priority": "High",
+            "Goal_Status": "Complete",
+            "Goal_Start_Date": "01/01/2020",
+            "Goal_Next_Check_Date": "01/01/2020",
+            "Goal_Complete_Date": "01/01/2021",
+            "Goal_Notes": "I want to get out of debt"
+        }
+    ],
+    "Bible_Study": [
+        {
+            "Study_Summary": "Two week study on manhood and fatherhood",
+            "Study_Depth": "Low",
+            "Study_Status": "Completed",
+            "Study_Start_Date": "01/01/2020",
+            "Study_End_Date": "01/14/2020",
+            "Study_Verses": [
+                {
+                    "Verse": "John 3:16",
+                    "Verse_Text": "For God so loved the world that he gave his one and only Son, that whoever believes in him shall not perish but have eternal life.",
+                    "Verse_Day": 1,
+                    "Verse_Question": "What does this verse say about God?",
+                    "Verse_Reflection": "How can you apply this to your life?",
+                    "Notes": "This is a note"
+                },
+                {
+                    "Verse": "John 3:17",
+                    "Verse_Text": "For God did not send his Son into the world to condemn the world, but to save the world through him.",
+                    "Verse_Day": 2,
+                    "Verse_Question": "What does this verse say about God?",
+                    "Verse_Reflection": "How can you apply this to your life?",
+                    "Notes": "This is a note"
+                }
+            ]
+        }
+    ]
+}

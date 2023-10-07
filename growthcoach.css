@@ -1,0 +1,89 @@
+:root {
+  --primary: #9FD8DB;
+  --secondary: #1B4156;
+  --tertiary: #F9735B;
+  --text-gray: #777777;
+}
+
+body {
+  padding: 0;
+  margin: 0;
+  font-family: 'Open Snas', sans-serif;
+  background-image: linear-gradient(160deg, var(--primary), var(--secondary));
+  background-repeat: no-repeat;
+  height: 100vh;
+}
+
+#growthcoach {
+  max-width:600px;
+  margin: 0 auto;
+}
+
+/* Style the form */
+#regForm {
+    margin: 0 auto;
+    padding: 40px;
+    width: 70%;
+    min-width: 300px;
+  }
+  
+  /* Style the input fields */
+  input {
+    padding: 0.5rem 2%;
+    width: 96%;
+    font-size: 0.9rem;
+    border-radius: 0.25rem;
+    border: none;
+  }
+  
+  /* Mark input boxes that gets an error on validation: */
+  input.invalid {
+    background-color: #ffdddd;
+  }
+  
+  /* Hide all steps by default: */
+  .tab {
+    display: none;
+  }
+  
+  /* Make circles that indicate the steps of the form: */
+  .step {
+    height: 15px;
+    width: 15px;
+    margin: 0 2px;
+    background-color: #bbbbbb;
+    border: none;
+    border-radius: 50%;
+    display: inline-block;
+    opacity: 0.5;
+  }
+  
+  /* Mark the active step: */
+  .step.active {
+    opacity: 1;
+  }
+  
+  /* Mark the steps that are finished and valid: */
+  .step.finish {
+    background-color: #04AA6D;
+  }
+
+  button {
+    padding: 0.25rem 1rem;
+    font-size: 1.1rem;
+    font-weight: bold;
+    background-color: var(--tertiary);
+    color: white;
+    border: none;
+    border-radius: 0.25rem;
+}
+
+#regForm label {
+  background-color: #efefef;
+  border-radius: 0.5rem;
+  display: block;
+  margin: 0.5rem;
+  padding: 1rem;
+  text-align: center;
+  font-weight: bold;
+}
