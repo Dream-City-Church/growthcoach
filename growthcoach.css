@@ -13,6 +13,7 @@ body {
   background-image: linear-gradient(160deg, var(--primary), var(--secondary));
   background-repeat: no-repeat;
   height: 100vh;
+  width: 100%;
   overflow: hidden;
 }
 
@@ -52,6 +53,7 @@ h3 {
 
 #growthcoach {
   max-width:600px;
+  width: 100%;
   margin: 0 auto;
 }
 
@@ -156,6 +158,10 @@ input[type="checkbox"] {
   margin-top: 2rem;
 }
 
+button#chatSend {
+  width: 25% !important;
+}
+
 #regForm label {
   background-color: #efefef;
   border-radius: 0.5rem;
@@ -241,10 +247,14 @@ div#chat-card {
 }
 
 .goal {
-  margin: 2rem;
+  margin: 1.5rem;
   border-left: 2px solid var(--tertiary);
-  padding-left: 2rem;
+  padding: 0.5rem 0.5rem 0.5rem 2rem;
   cursor: pointer;
+}
+
+.goal:hover {
+  background-color: rgba(159,216,219,0.15);
 }
 
 span.goal-title {
@@ -381,5 +391,19 @@ div#reflection {
   }
   100% {
     transform: translate(24px, 0);
+  }
+}
+
+/* mobile styling */
+@media only screen and (max-width: 600px) {
+  .card {
+    padding: 5%;
+    width: 90%;
+  }
+  .goal {
+    margin: 1.5rem;
+  }
+  #chatInputText {
+    width:60%;
   }
 }

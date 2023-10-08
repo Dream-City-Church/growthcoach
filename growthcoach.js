@@ -140,8 +140,8 @@ function startChat(chatType,chatMessage){
     // Create the chat input and send button
     chatInput.innerHTML = `
         <div id="chatInput" style="display: flex;">
-            <input id="chatInputText" style="width: 100%;"/>
-            <button id="chatSend" style="width: 100%;">Send</button>
+            <input id="chatInputText" />
+            <button id="chatSend" >Send</button>
         </div>`;
 
     var chatSend = document.getElementById("chatSend");
