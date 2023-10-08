@@ -142,10 +142,11 @@ div#salutation {
 div#chat-card {
   position: absolute;
   max-width: 600px;
-  z-index: 999;
+  z-index: 990;
   height: 90vh;
   bottom: -90vh;
   overflow: hidden;
+  transition: bottom 0.25s ease-in-out;
 }
 
 #chat-card #chatWindow {

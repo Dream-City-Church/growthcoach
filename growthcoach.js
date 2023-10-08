@@ -27,11 +27,13 @@ function growthCoachLaunch(action){
             // if the chat card header has a data value of up
             if(document.getElementById("chat-card-header").getAttribute("data") == "up") {
                 startChat('generalChat','I would like to chat. Greet me and ask me about what I would like to discuss.');
-                
+                document.getElementById("chat-card-header").setAttribute("data","down");
             } else {
                 document.getElementById("chat-card-header").setAttribute("data","up");
+                var arrowUps = document.querySelectorAll('.arrow.down')
+                    arrowUps.forEach((arrowUp) => {arrowUp.classList.replace('down','up');})
                 document.getElementById("chat-card").style.bottom = null;
-                document.getElementById("chat-card").innerHTML = `<div id="chat-card-header" data="up"><span class="arrow up"></span>Chat with Growth Coach<span class="arrow up"></span></div>`;
+                document.getElementById("chatWindow").innerHTML = ``;
             }
         });
 
@@ -140,14 +142,14 @@ function startChat(chatType,chatMessage){
         var chatInputTextValue = chatInputText.value;
 
         // Add the chat to the chat window
-        chatWindowContent.innerHTML += `<div style="width: 100%; display: flex; flex-direction: column;">
-            <div style="width: 100%; text-align: right;">
-                <div class="userChatMessage">
-                    ${chatInputTextValue}
-                </div>
+        chatWindowContent.innerHTML.insertAdjacentHTML("beforeend",`<div style="width: 100%; display: flex; flex-direction: column;">
+        <div style="width: 100%; text-align: right;">
+            <div class="userChatMessage">
+                ${chatInputTextValue}
             </div>
         </div>
-        <div id="loading-indicator"></div>`;
+    </div>
+    <div id="loading-indicator"></div>`) ;
 
         chatWindow.scrollTop = chatWindowContent.scrollHeight;
         
@@ -191,13 +193,13 @@ function sendChat(chatInputTextValue,chatType) {
             currentChatHistory.push({"content":data.response,"role":"assistant"});
             //update chat window
             var chatWindowContent = document.getElementById("chatWindowContent");
-            chatWindowContent.innerHTML += `<div style="width: 100%; display: flex; flex-direction: column;">
-                <div style="width: 100%;">
-                    <div class="botChatMessage">
-                        ${data.response}
-                    </div>
+            chatWindowContent.insertAdjacentHTML("beforeend",`<div style="width: 100%; display: flex; flex-direction: column;">
+            <div style="width: 100%;">
+                <div class="botChatMessage">
+                    ${data.response}
                 </div>
-            </div>`;
+            </div>
+        </div>`);
             chatWindow.scrollTop = chatWindowContent.scrollHeight;
         }
         if(data.goal_action == "add") {
