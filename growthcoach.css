@@ -16,6 +16,15 @@ body {
   overflow: hidden;
 }
 
+a {
+  color: var(--tertiary);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
 h2 {
   margin: 2rem 0rem 0rem 0rem;
   font-size: 2.25rem;
@@ -127,16 +136,19 @@ div#salutation {
   color: white;
   padding: 1rem;
   font-weight: bold;
+  width: 70%;
+  float: left;
 }
 
 .card {
   width: 100%;
-  padding: 1rem;
+  padding: 1rem 2rem 1rem 1rem;
   background-color: white;
   border-radius: 1rem;
   min-height: 1rem;
   margin-bottom: 2rem;
   box-shadow: 0.25rem 0.25rem 0.5rem rgba(0,0,0,0.2);
+  clear: both;
 }
 
 div#chat-card {
@@ -150,7 +162,7 @@ div#chat-card {
 }
 
 #chat-card #chatWindow {
-  max-height: 96%;
+  max-height: 92%;
 }
 
 .botChatMessage {
@@ -198,6 +210,7 @@ div#chat-card-header {
   color: var(--text-gray);
   padding: 0.5rem;
   cursor: pointer;
+  font-weight: bold;
 }
 
 .arrow {
@@ -226,4 +239,37 @@ div#chat-card-header {
 .down {
   transform: rotate(45deg);
   -webkit-transform: rotate(45deg);
+}
+
+img#logo {
+  object-fit: contain;
+  width: 100%;
+}
+
+div#logo-container {
+  float: right;
+  width: 15%;
+  margin: 1rem;
+}
+
+div#bible-passage {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: var(--tertiary);
+  margin: 0.25rem 1rem;
+}
+
+div#passage_summary {
+  font-size: 1rem;
+  font-style: italic;
+  color: var(--text-gray);
+  margin: 1rem;
+}
+
+div#passage_question {
+    margin: 1rem;
+}
+
+div#reflection {
+  margin: 1rem;
 }

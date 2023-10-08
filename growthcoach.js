@@ -1,5 +1,6 @@
 var gcUserJson = loadGrowthCoachUser();
 var gcUserGoals = loadGrowthCoachGoals();
+var gcDailyReflection = JSON.parse(localStorage.getItem("gcDailyReflection"));
 var gcNewUserInfo = {};
 var currentTab = 0; // Current tab is set to be the first tab (0)
 var currentChatHistory=[];
@@ -14,9 +15,9 @@ function growthCoachLaunch(action){
     }else{
         // Load Main App Page
         var gcHomeLayout = `
-            <div id="salutation"><h2>Hi, ${gcUserJson.first_name}!</h2></div>
+            <div id="salutation"><h2>Hi, ${gcUserJson.first_name}!</h2></div><div id="logo-container"><img id="logo" src="./growthcoach-logo-full.png" /></div>
             <div id="goals-card" class="card"><h3>Your Goals</h3></div>
-            <div id="reading-plan-card" class="card"><h3>Reading Plan</h3></div>
+            <div id="daily-reflection-card" class="card"><h3>Daily Reflection</h3></div>
             <div id="chat-card" class="card"><div id="chat-card-header" data="up"><span class="arrow up"></span>Chat with Growth Coach<span class="arrow up"></span></div></div>
             `;
 
@@ -57,6 +58,9 @@ function growthCoachLaunch(action){
                 startChat('goalCheckin','I would like to chat about my previously set goal of '+goalTitle+'. Ask me what I would like to discuss about the goal.');
             });
         });
+
+        // load daily reflection
+        dailyReflection();
     }
 }
 
@@ -112,10 +116,10 @@ function startChat(chatType,chatMessage){
         var arrowUps = document.querySelectorAll('.arrow.up')
         arrowUps.forEach((arrowUp) => {arrowUp.classList.replace('up','down');})
         document.getElementById("chat-card-header").setAttribute("data","down");
-        document.getElementById("chat-card").insertAdjacentHTML("beforeend", `<div id="chatWindow"></div><div id="chatInput"></div>`);
+        document.getElementById("chat-card").insertAdjacentHTML("beforeend", `<div id="chatWindow" style="height: 100%; overflow-y: scroll; overflow-x: hidden;"></div><div id="chatInput"></div>`);
         document.getElementById("chat-card").style.bottom = 0;
     } else {
-        document.getElementById("growthcoach").innerHTML += `<div id="chatWindow"></div><div id="chatInput"></div>`;
+        document.getElementById("growthcoach").innerHTML += `<div id="chatWindow" style="height: 100%; overflow-y: scroll; overflow-x: hidden;"></div><div id="chatInput"></div>`;
     }
     var chatWindow = document.getElementById("chatWindow");
     var chatInput = document.getElementById("chatInput");
@@ -123,9 +127,7 @@ function startChat(chatType,chatMessage){
 
     // Create the chat window
     chatWindow.innerHTML = `
-        <div id="chatWindow" style="height: 100%; overflow-y: scroll; overflow-x: hidden;">
-            <div id="chatWindowContent" style="display: flex; flex-direction: column;"></div>
-        </div>`;
+        <div id="chatWindowContent" style="display: flex; flex-direction: column;"></div>`;
 
     // Create the chat input and send button
     chatInput.innerHTML = `
@@ -168,6 +170,34 @@ function startChat(chatType,chatMessage){
         // Clear the chat input text
         chatInputText.value = "";
     });
+    chatInputText.addEventListener("keypress", function(event){
+        if (event.key === "Enter") {
+            console.log('send button click detected');
+            var chatInputText = document.getElementById("chatInputText");
+            var chatWindowContent = document.getElementById("chatWindowContent");
+            var chatInputTextValue = chatInputText.value;
+
+            // Add the chat to the chat window
+            chatWindowContent.insertAdjacentHTML("beforeend",`<div style="width: 100%; display: flex; flex-direction: column;">
+            <div style="width: 100%; text-align: right;">
+                <div class="userChatMessage">
+                    ${chatInputTextValue}
+                </div>
+            </div>
+        </div>
+        <div id="loading-indicator"></div>`) ;
+
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+            
+            // Send the chat to the Logic App endpoint
+            sendChat(chatInputTextValue,chatType);
+
+            // Clear the chat input text
+            chatInputText.value = "";
+        }
+    });
+
+
 }
 
 function sendChat(chatInputTextValue,chatType) {
@@ -237,6 +267,56 @@ function sendChat(chatInputTextValue,chatType) {
             growthCoachGoals("complete",data.function_data);
         }
     })
+}
+
+function dailyReflection() {
+    // Check if saved daily reflection is expired
+    if(gcDailyReflection) {
+        console.log("daily reflection exists");
+        var now = new Date();
+        var savedDate = new Date(gcDailyReflection.date);
+        var timeDiff = Math.abs(now.getTime() - savedDate.getTime());
+        var diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24)); 
+        if(diffDays > 1) {
+            console.log("daily reflection expired");
+            gcDailyReflection = null;
+        } else {
+            console.log("load existing daily reflection");
+            document.getElementById("daily-reflection-card").insertAdjacentHTML("beforeend",`<div id="bible-passage"><a href="https://www.biblegateway.com/passage/?search=${gcDailyReflection.bible_passage}" target="_blank">${gcDailyReflection.bible_passage}</a></div><div id="passage_summary">${gcDailyReflection.passage_summary}</div><div id="passage_question">${gcDailyReflection.passage_question}</div><div id="reflection">${gcDailyReflection.reflection}</div>`);
+        }
+    }
+
+    // If no saved daily reflection, get a new one
+    if(!gcDailyReflection) {
+        console.log("get new daily reflection");
+        const params = {
+            "gcUser": gcUserJson
+        };
+        const options = {
+            method: 'POST',
+            body: JSON.stringify( params ),
+            headers: {'Content-Type': 'application/json'}
+        };
+        fetch('https://prod-21.southcentralus.logic.azure.com:443/workflows/91f5f34d292c414d928a1dbddaca81bc/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=o4ykTTiMZCmd_HFW4oCJK7PaAmOlfIA1b17alZcibrY',options)
+        .then(response => response.json())
+        .then(function (data) {
+            if(data.status=="ok"){
+                console.log("load new daily reflection")
+                console.log(data);
+                // Save daily reflection to localStorage
+                gcDailyReflection = {
+                    "date": new Date(),
+                    "bible_passage": data.bible_passage,
+                    "passage_summary": data.passage_summary,
+                    "passage_question": data.passage_question,
+                    "reflection": data.reflection
+                };
+                localStorage.setItem("gcDailyReflection", JSON.stringify(gcDailyReflection));
+
+                document.getElementById("daily-reflection-card").insertAdjacentHTML("beforeend",`<div id="bible-passage"><a href="https://www.biblegateway.com/passage/?search=${data.bible_passage}" target="_blank">${data.bible_passage}</a></div><div id="passage_summary">${data.passage_summary}</div><div id="passage_question">${data.passage_question}</div><div id="reflection">${data.reflection}</div>`);
+            }
+        })
+    }
 }
 
 
