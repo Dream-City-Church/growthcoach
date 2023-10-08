@@ -95,11 +95,12 @@ function growthCoachGoals(goalActionType,goalArray) {
         saveGrowthCoachGoals(gcUserGoals);
     } else if(goalActionType == "edit") {
     } else if(goalActionType == "complete") {
-        gcUserGoals.forEach(function(goal){
-            if(goal.goal_id === goalArray) {
-                goal.goal_status = "complete";
-            }
-        })
+        console.log('complete goal id: '+goalArray);
+        const index = gcUserGoals.map(id => id.goal_id).indexOf(goalArray);
+        if(index > -1) {
+            gcUserGoals.splice(index,1);
+        }
+        saveGrowthCoachGoals(gcUserGoals);
     } else if(goalActionType == "delete") {
     }
 }
@@ -150,7 +151,7 @@ function startChat(chatType,chatMessage){
         var chatInputTextValue = chatInputText.value;
 
         // Add the chat to the chat window
-        chatWindowContent.innerHTML.insertAdjacentHTML("beforeend",`<div style="width: 100%; display: flex; flex-direction: column;">
+        chatWindowContent.insertAdjacentHTML("beforeend",`<div style="width: 100%; display: flex; flex-direction: column;">
         <div style="width: 100%; text-align: right;">
             <div class="userChatMessage">
                 ${chatInputTextValue}
@@ -159,7 +160,7 @@ function startChat(chatType,chatMessage){
     </div>
     <div id="loading-indicator"></div>`) ;
 
-        chatWindow.scrollTop = chatWindowContent.scrollHeight;
+        chatWindow.scrollTop = chatWindow.scrollHeight;
         
         // Send the chat to the Logic App endpoint
         sendChat(chatInputTextValue,chatType);
@@ -208,10 +209,11 @@ function sendChat(chatInputTextValue,chatType) {
                 </div>
             </div>
         </div>`);
-            chatWindow.scrollTop = chatWindowContent.scrollHeight;
+            chatWindow.scrollTop = chatWindow.scrollHeight;
         }
 
         if(data.goal_action == "add") {
+            console.log('add goal detected');
             // save goals to localStorage
             growthCoachGoals("add",data.function_data);
 
@@ -229,20 +231,10 @@ function sendChat(chatInputTextValue,chatType) {
         }
 
         if(data.goal_action == "complete") {
+            console.log('complete goal detected');
+            console.log(data.function_data);
             // save goals to localStorage
             growthCoachGoals("complete",data.function_data);
-
-            // remove chat input window and replace with close button
-            document.getElementById("chatInput").innerHTML = `<button id="chatClose" style="width: 100%;">Close</button>`;
-            
-            // add event listener onto close button
-            var chatClose = document.getElementById("chatClose");
-            chatClose.addEventListener("click", function(){
-                console.log('close button click detected');
-                // remove chat window
-
-                growthCoachLaunch('homeScreen');
-            });
         }
     })
 }
