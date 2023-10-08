@@ -1,3 +1,4 @@
+var gcVersion = "2023.10.7.38";
 var gcUserJson = loadGrowthCoachUser();
 var gcUserGoals = loadGrowthCoachGoals();
 var gcDailyReflection = JSON.parse(localStorage.getItem("gcDailyReflection"));
@@ -6,6 +7,7 @@ var currentTab = 0; // Current tab is set to be the first tab (0)
 var currentChatHistory=[];
 const chatEndpointUrl = 'https://prod-28.southcentralus.logic.azure.com:443/workflows/8897a84bc942409e9d960e0f264d4cef/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=k4_xK1LfAx38_kC_KkKcwiLccqD2niWaVPJZ_bZ754M';
 
+document.getElementById("version-id").innerHTML = gcVersion;
 
 function growthCoachLaunch(action){
     if((gcUserJson == null || gcUserJson == '') & action != 'homeScreen'){

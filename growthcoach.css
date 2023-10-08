@@ -16,6 +16,15 @@ body {
   overflow: hidden;
 }
 
+div#version-id {
+  position: absolute;
+  z-index: 999;
+  left: 10px;
+  bottom: 10px;
+  font-size: 0.65rem;
+  color: var(--primary);
+}
+
 a {
   color: var(--tertiary);
   text-decoration: none;
