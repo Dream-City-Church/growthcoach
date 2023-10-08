@@ -23,7 +23,7 @@ function growthCoachLaunch(action){
     }else{
         // Load Main App Page
         var gcHomeLayout = `
-            <div id="salutation"><h2>Hi, ${gcUserJson.first_name}!</h2></div><div id="logo-container"><img id="logo" src="./growthcoach-logo-full.png" /></div>
+            <div id="salutation"><h2>Hi, ${gcUserJson.first_name}!</h2></div><div id="logo-container"><img id="logo" src="./growthcoach-logo-full.png" alt="Growth Coach logo" /></div>
             <div id="goals-card" class="card"><h3>Your Goals</h3></div>
             <div id="daily-reflection-card" class="card"><h3>Daily Reflection</h3><div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div></div>
             <div id="chat-card" class="card"><div id="chat-card-header" data="up"><span class="arrow up"></span>Chat with Growth Coach<span class="arrow up"></span></div></div>
@@ -430,7 +430,7 @@ var gcNewUserForm = `
     <form id="regForm" action="">
 
     <div class="tab"><h2>Hi, I'm Growth Coach!</h2>
-        <img id="logo-welcome" src="./growthcoach-logo-full.png" />
+        <img id="logo-welcome" src="./growthcoach-logo-full.png" alt="Growth Coach logo" />
         <p>I'm here to help you grow in your faith. Let's get to know each other a little better.</p>
         <p>Answer as best as you can. I'll use your answers to build a custom plan for you.</p>
         </div>
