@@ -26,7 +26,7 @@ function growthCoachLaunch(action){
             console.log('chat header click detected');
             // if the chat card header has a data value of up
             if(document.getElementById("chat-card-header").getAttribute("data") == "up") {
-                startChat('generalChat',gcUserJson.first_name+' wants to chat about something. Ask them what they would like to discuss.');
+                startChat('generalChat','I would like to chat. Greet me and ask me about what I would like to discuss.');
                 
             } else {
                 document.getElementById("chat-card-header").setAttribute("data","up");
@@ -49,7 +49,7 @@ function growthCoachLaunch(action){
             goal.addEventListener('click', function() {
                 console.log('goal click detected');
                 var goalTitle = goal.querySelector('.goal-title').innerHTML;
-                startChat('goalCheckin',gcUserJson.first_name+' wants to chat about their previously set goal of '+goalTitle+'. As them what they would like to discuss about the goal.');
+                startChat('goalCheckin','I would like to chat about my previously set goal of '+goalTitle+'. Ask me what I would like to discuss about the goal.');
             });
         });
     }
@@ -148,6 +148,8 @@ function startChat(chatType,chatMessage){
             </div>
         </div>
         <div id="loading-indicator"></div>`;
+
+        chatWindow.scrollTop = chatWindowContent.scrollHeight;
         
         // Send the chat to the Logic App endpoint
         sendChat(chatInputTextValue,chatType);
@@ -196,6 +198,7 @@ function sendChat(chatInputTextValue,chatType) {
                     </div>
                 </div>
             </div>`;
+            chatWindow.scrollTop = chatWindowContent.scrollHeight;
         }
         if(data.goal_action == "add") {
             // save goals to localStorage
