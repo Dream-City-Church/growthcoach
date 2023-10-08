@@ -448,7 +448,8 @@ var gcNewUserForm = `
     <div class="tab"><h2>Hi, I'm Growth Coach!</h2>
         <img id="logo-welcome" src="./growthcoach-logo-full.png" alt="Growth Coach logo" />
         <p>I'm here to help you grow in your faith. Let's get to know each other a little better.</p>
-        <p>Answer as best as you can. I'll use your answers to build a custom plan for you.</p>
+        <p>I have a few questions for you to help get us started. Please answer as best as you can. I'll use your answers to build a custom plan for you.</p>
+        <p>After that, we'll chat and I'll help you set some goals and give you some tips to help you grow.</p>
         </div>
 
     <!-- One "tab" for each step in the form: -->
