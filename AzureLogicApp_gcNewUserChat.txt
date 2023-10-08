@@ -1,0 +1,991 @@
+{
+    "definition": {
+        "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+        "actions": {
+            "ChatGPT_Response": {
+                "inputs": {
+                    "content": "@variables('GPT-Response')",
+                    "schema": {
+                        "properties": {
+                            "choices": {
+                                "items": {
+                                    "properties": {
+                                        "finish_reason": {},
+                                        "index": {
+                                            "type": "integer"
+                                        },
+                                        "message": {
+                                            "properties": {
+                                                "content": {
+                                                    "type": "string"
+                                                },
+                                                "role": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "required": [
+                                        "index",
+                                        "message"
+                                    ],
+                                    "type": "object"
+                                },
+                                "type": "array"
+                            },
+                            "created": {
+                                "type": "integer"
+                            },
+                            "id": {
+                                "type": "string"
+                            },
+                            "model": {
+                                "type": "string"
+                            },
+                            "object": {
+                                "type": "string"
+                            },
+                            "usage": {
+                                "properties": {
+                                    "completion_tokens": {
+                                        "type": "integer"
+                                    },
+                                    "prompt_tokens": {
+                                        "type": "integer"
+                                    },
+                                    "total_tokens": {
+                                        "type": "integer"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        },
+                        "type": "object"
+                    }
+                },
+                "runAfter": {
+                    "If_Chat_History_Null": [
+                        "Succeeded"
+                    ]
+                },
+                "type": "ParseJson"
+            },
+            "Chat_System_Prompt": {
+                "inputs": [
+                    {
+                        "content": "YOUR REPLY MUST BE FORMATTED IN HTML, INCLUDING LINE BREAKS AND LIST FORMATTING.\n\nYou are Growth Coach, a Christian mentorship expert with 20 years of experience guiding people into closer relationship with God and Jesus Christ. You are a life coach for the user and communicate over chat messages. Using the information from their profile below, help the user develop spiritual goals, build better habits, and grow in their faith.\n\nPropose up to 3 goals to the user and include a check-in date between 1 day and 14 days. At least one of the goals should involve the user connecting with people in some way. Ask the user if they agree to the goals or if they would like to make any changes. Refine the goals until the user agrees on the goals. Responses should be friendly, casual and encouraging, but also short and concise. \n\nToday is @{formatDateTime(subtractFromTime(utcNow(),7,'Hour'),'MMMM dd, yyyy')}.\n\nProfile:\n- The user's name is @{triggerBody()?['gcUser']?['first_name']}. They are a @{triggerBody()?['gcUser']?['age']} year old @{triggerBody()?['gcUser']?['gender']}.\n- They are @{triggerBody()?['gcUser']?['marital']} and have @{triggerBody()?['gcUser']?['children']}.\n- They've been a Christian for @{triggerBody()?['gcUser']?['time_as_christian']}.\n- They attend church @{triggerBody()?['gcUser']?['church_attendance']}.\n- They read their Bible @{triggerBody()?['gcUser']?['bible']}.\n- They pray @{triggerBody()?['gcUser']?['prayer']}.\n- Attends small group: @{triggerBody()?['gcUser']?['small_group']}.\n- Volunteers: @{triggerBody()?['gcUser']?['volunteer']}.\n- Gives financially: @{triggerBody()?['gcUser']?['give']}.\n\nCurrent Goals:\n@{triggerBody()?['gcGoals']}",
+                        "role": "system"
+                    }
+                ],
+                "runAfter": {
+                    "Functions_Prompt": [
+                        "Succeeded"
+                    ]
+                },
+                "type": "Compose"
+            },
+            "Functions_Prompt": {
+                "inputs": [
+                    {
+                        "description": "Use this function after the user has confirmed their goals. This will save the goals to their profile.",
+                        "name": "create_goals",
+                        "parameters": {
+                            "properties": {
+                                "goals": {
+                                    "items": {
+                                        "properties": {
+                                            "goal_check-in_days": {
+                                                "description": "In how many days the check-in for the goal will occur.",
+                                                "type": "string"
+                                            },
+                                            "goal_description": {
+                                                "description": "A one paragraph description of the gaol.",
+                                                "type": "string"
+                                            },
+                                            "goal_title": {
+                                                "description": "A few word summary of the goal.",
+                                                "type": "string"
+                                            }
+                                        },
+                                        "type": "object"
+                                    },
+                                    "type": "array"
+                                }
+                            },
+                            "type": "object"
+                        }
+                    },
+                    {
+                        "description": "Use this function after the user indicates they have completed a goal.",
+                        "name": "completed_goal",
+                        "parameters": {
+                            "properties": {
+                                "goal_id": {
+                                    "description": "The id of the goal that was completed.",
+                                    "type": "string"
+                                }
+                            },
+                            "type": "object"
+                        }
+                    }
+                ],
+                "runAfter": {
+                    "goalsArray": [
+                        "Succeeded"
+                    ]
+                },
+                "type": "Compose"
+            },
+            "GPT-Response": {
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "GPT-Response",
+                            "type": "string"
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "OpenAI_GPT4_Key": [
+                        "Succeeded"
+                    ]
+                },
+                "type": "InitializeVariable"
+            },
+            "If_Chat_History_Null": {
+                "actions": {
+                    "Get_ChatGPT_Chat_Response": {
+                        "inputs": {
+                            "body": {
+                                "frequency_penalty": 0,
+                                "max_tokens": 500,
+                                "messages": "@outputs('Chat_System_Prompt')",
+                                "presence_penalty": 0,
+                                "stop": null,
+                                "temperature": 0.75,
+                                "top_p": 0.95
+                            },
+                            "headers": {
+                                "Content-Type": "application/json",
+                                "api-key": "@body('OpenAI_GPT4_Key')?['value']"
+                            },
+                            "method": "POST",
+                            "uri": "https://dccgpt4.openai.azure.com/openai/deployments/dcc-gpt4/chat/completions?api-version=2023-08-01-preview"
+                        },
+                        "runAfter": {},
+                        "type": "Http"
+                    },
+                    "Set_variable": {
+                        "inputs": {
+                            "name": "GPT-Response",
+                            "value": "@{body('Get_ChatGPT_Chat_Response')}"
+                        },
+                        "runAfter": {
+                            "Get_ChatGPT_Chat_Response": [
+                                "Succeeded"
+                            ]
+                        },
+                        "type": "SetVariable"
+                    }
+                },
+                "else": {
+                    "actions": {
+                        "Get_ChatGPT_Response": {
+                            "inputs": {
+                                "body": {
+                                    "frequency_penalty": 0,
+                                    "function_call": "auto",
+                                    "functions": "@outputs('Functions_Prompt')",
+                                    "max_tokens": 500,
+                                    "messages": "@union(outputs('Chat_System_Prompt'),triggerBody()?['chatHistory'])",
+                                    "presence_penalty": 0,
+                                    "stop": null,
+                                    "temperature": 0.75,
+                                    "top_p": 0.95
+                                },
+                                "headers": {
+                                    "Content-Type": "application/json",
+                                    "api-key": "@body('OpenAI_GPT4_Key')?['value']"
+                                },
+                                "method": "POST",
+                                "uri": "https://dccgpt4.openai.azure.com/openai/deployments/dcc-gpt4/chat/completions?api-version=2023-08-01-preview"
+                            },
+                            "runAfter": {},
+                            "type": "Http"
+                        },
+                        "Set_variable_2": {
+                            "inputs": {
+                                "name": "GPT-Response",
+                                "value": "@{body('Get_ChatGPT_Response')}"
+                            },
+                            "runAfter": {
+                                "Get_ChatGPT_Response": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "SetVariable"
+                        }
+                    }
+                },
+                "expression": {
+                    "or": [
+                        {
+                            "equals": [
+                                "@triggerBody()?['chatHistory']",
+                                "@null"
+                            ]
+                        },
+                        {
+                            "less": [
+                                "@length(triggerBody()?['chatHistory'])",
+                                1
+                            ]
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Chat_System_Prompt": [
+                        "Succeeded"
+                    ]
+                },
+                "type": "If"
+            },
+            "If_Function_Call": {
+                "actions": {
+                    "Switch": {
+                        "cases": {
+                            "complete_goal": {
+                                "actions": {
+                                    "Parse_Completed_Goal": {
+                                        "inputs": {
+                                            "content": "@body('ChatGPT_Response')?['choices'][0]['message']['function_call']['arguments']",
+                                            "schema": {
+                                                "properties": {
+                                                    "goal_id": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "runAfter": {},
+                                        "type": "ParseJson"
+                                    },
+                                    "Reply_Completed": {
+                                        "inputs": {
+                                            "content": "@body('Reply_Completed_Goal')",
+                                            "schema": {
+                                                "properties": {
+                                                    "properties": {
+                                                        "properties": {
+                                                            "choices": {
+                                                                "properties": {
+                                                                    "items": {
+                                                                        "properties": {
+                                                                            "properties": {
+                                                                                "properties": {
+                                                                                    "finish_reason": {
+                                                                                        "properties": {},
+                                                                                        "type": "object"
+                                                                                    },
+                                                                                    "index": {
+                                                                                        "properties": {
+                                                                                            "type": {
+                                                                                                "type": "string"
+                                                                                            }
+                                                                                        },
+                                                                                        "type": "object"
+                                                                                    },
+                                                                                    "message": {
+                                                                                        "properties": {
+                                                                                            "properties": {
+                                                                                                "properties": {
+                                                                                                    "content": {
+                                                                                                        "properties": {
+                                                                                                            "type": {
+                                                                                                                "type": "string"
+                                                                                                            }
+                                                                                                        },
+                                                                                                        "type": "object"
+                                                                                                    },
+                                                                                                    "role": {
+                                                                                                        "properties": {
+                                                                                                            "type": {
+                                                                                                                "type": "string"
+                                                                                                            }
+                                                                                                        },
+                                                                                                        "type": "object"
+                                                                                                    }
+                                                                                                },
+                                                                                                "type": "object"
+                                                                                            },
+                                                                                            "type": {
+                                                                                                "type": "string"
+                                                                                            }
+                                                                                        },
+                                                                                        "type": "object"
+                                                                                    }
+                                                                                },
+                                                                                "type": "object"
+                                                                            },
+                                                                            "required": {
+                                                                                "items": {
+                                                                                    "type": "string"
+                                                                                },
+                                                                                "type": "array"
+                                                                            },
+                                                                            "type": {
+                                                                                "type": "string"
+                                                                            }
+                                                                        },
+                                                                        "type": "object"
+                                                                    },
+                                                                    "type": {
+                                                                        "type": "string"
+                                                                    }
+                                                                },
+                                                                "type": "object"
+                                                            },
+                                                            "created": {
+                                                                "properties": {
+                                                                    "type": {
+                                                                        "type": "string"
+                                                                    }
+                                                                },
+                                                                "type": "object"
+                                                            },
+                                                            "id": {
+                                                                "properties": {
+                                                                    "type": {
+                                                                        "type": "string"
+                                                                    }
+                                                                },
+                                                                "type": "object"
+                                                            },
+                                                            "model": {
+                                                                "properties": {
+                                                                    "type": {
+                                                                        "type": "string"
+                                                                    }
+                                                                },
+                                                                "type": "object"
+                                                            },
+                                                            "object": {
+                                                                "properties": {
+                                                                    "type": {
+                                                                        "type": "string"
+                                                                    }
+                                                                },
+                                                                "type": "object"
+                                                            },
+                                                            "usage": {
+                                                                "properties": {
+                                                                    "properties": {
+                                                                        "properties": {
+                                                                            "completion_tokens": {
+                                                                                "properties": {
+                                                                                    "type": {
+                                                                                        "type": "string"
+                                                                                    }
+                                                                                },
+                                                                                "type": "object"
+                                                                            },
+                                                                            "prompt_tokens": {
+                                                                                "properties": {
+                                                                                    "type": {
+                                                                                        "type": "string"
+                                                                                    }
+                                                                                },
+                                                                                "type": "object"
+                                                                            },
+                                                                            "total_tokens": {
+                                                                                "properties": {
+                                                                                    "type": {
+                                                                                        "type": "string"
+                                                                                    }
+                                                                                },
+                                                                                "type": "object"
+                                                                            }
+                                                                        },
+                                                                        "type": "object"
+                                                                    },
+                                                                    "type": {
+                                                                        "type": "string"
+                                                                    }
+                                                                },
+                                                                "type": "object"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    },
+                                                    "type": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "runAfter": {
+                                            "Reply_Completed_Goal": [
+                                                "Succeeded"
+                                            ]
+                                        },
+                                        "type": "ParseJson"
+                                    },
+                                    "Reply_Completed_Goal": {
+                                        "inputs": {
+                                            "body": {
+                                                "frequency_penalty": 0,
+                                                "max_tokens": 500,
+                                                "messages": "@union(outputs('Chat_System_Prompt'),triggerBody()?['chatHistory'])",
+                                                "presence_penalty": 0,
+                                                "stop": null,
+                                                "temperature": 0.75,
+                                                "top_p": 0.95
+                                            },
+                                            "headers": {
+                                                "Content-Type": "application/json",
+                                                "api-key": "@body('OpenAI_GPT4_Key')?['value']"
+                                            },
+                                            "method": "POST",
+                                            "uri": "https://dccgpt4.openai.azure.com/openai/deployments/dcc-gpt4/chat/completions?api-version=2023-08-01-preview"
+                                        },
+                                        "runAfter": {
+                                            "Parse_Completed_Goal": [
+                                                "Succeeded"
+                                            ]
+                                        },
+                                        "type": "Http"
+                                    },
+                                    "Response_2": {
+                                        "inputs": {
+                                            "body": {
+                                                "function_data": "@body('Parse_Completed_Goal')?['goal_id']",
+                                                "goal_action": "complete",
+                                                "response": "@variables('GPT-Response')",
+                                                "status": "ok"
+                                            },
+                                            "statusCode": 200
+                                        },
+                                        "kind": "Http",
+                                        "runAfter": {
+                                            "Set_variable_4": [
+                                                "Succeeded"
+                                            ]
+                                        },
+                                        "type": "Response"
+                                    },
+                                    "Set_variable_4": {
+                                        "inputs": {
+                                            "name": "GPT-Response",
+                                            "value": "@{body('Reply_Completed')?['choices'][0]['message']['content']}"
+                                        },
+                                        "runAfter": {
+                                            "Reply_Completed": [
+                                                "Succeeded"
+                                            ]
+                                        },
+                                        "type": "SetVariable"
+                                    }
+                                },
+                                "case": "completed_goal"
+                            },
+                            "create_goals": {
+                                "actions": {
+                                    "For_each": {
+                                        "actions": {
+                                            "Append_to_Goals_Array": {
+                                                "inputs": {
+                                                    "name": "goalsArray",
+                                                    "value": "@outputs('Update_goal_info')"
+                                                },
+                                                "runAfter": {
+                                                    "Update_goal_info": [
+                                                        "Succeeded"
+                                                    ]
+                                                },
+                                                "type": "AppendToArrayVariable"
+                                            },
+                                            "Update_goal_info": {
+                                                "inputs": {
+                                                    "goal_check_in_days": "@items('For_each')?['goal_check-in_days']",
+                                                    "goal_description": "@items('For_each')?['goal_description']",
+                                                    "goal_id": "@guid()",
+                                                    "goal_status": "active",
+                                                    "goal_title": "@items('For_each')?['goal_title']"
+                                                },
+                                                "runAfter": {},
+                                                "type": "Compose"
+                                            }
+                                        },
+                                        "foreach": "@body('Parse_Goals')?['goals']",
+                                        "runAfter": {
+                                            "Parse_Goals": [
+                                                "Succeeded"
+                                            ]
+                                        },
+                                        "type": "Foreach"
+                                    },
+                                    "Goals_Reply": {
+                                        "inputs": {
+                                            "content": "@body('Reply_to_Goals')",
+                                            "schema": {
+                                                "properties": {
+                                                    "properties": {
+                                                        "properties": {
+                                                            "choices": {
+                                                                "properties": {
+                                                                    "items": {
+                                                                        "properties": {
+                                                                            "properties": {
+                                                                                "properties": {
+                                                                                    "finish_reason": {
+                                                                                        "properties": {},
+                                                                                        "type": "object"
+                                                                                    },
+                                                                                    "index": {
+                                                                                        "properties": {
+                                                                                            "type": {
+                                                                                                "type": "string"
+                                                                                            }
+                                                                                        },
+                                                                                        "type": "object"
+                                                                                    },
+                                                                                    "message": {
+                                                                                        "properties": {
+                                                                                            "properties": {
+                                                                                                "properties": {
+                                                                                                    "content": {
+                                                                                                        "properties": {
+                                                                                                            "type": {
+                                                                                                                "type": "string"
+                                                                                                            }
+                                                                                                        },
+                                                                                                        "type": "object"
+                                                                                                    },
+                                                                                                    "role": {
+                                                                                                        "properties": {
+                                                                                                            "type": {
+                                                                                                                "type": "string"
+                                                                                                            }
+                                                                                                        },
+                                                                                                        "type": "object"
+                                                                                                    }
+                                                                                                },
+                                                                                                "type": "object"
+                                                                                            },
+                                                                                            "type": {
+                                                                                                "type": "string"
+                                                                                            }
+                                                                                        },
+                                                                                        "type": "object"
+                                                                                    }
+                                                                                },
+                                                                                "type": "object"
+                                                                            },
+                                                                            "required": {
+                                                                                "items": {
+                                                                                    "type": "string"
+                                                                                },
+                                                                                "type": "array"
+                                                                            },
+                                                                            "type": {
+                                                                                "type": "string"
+                                                                            }
+                                                                        },
+                                                                        "type": "object"
+                                                                    },
+                                                                    "type": {
+                                                                        "type": "string"
+                                                                    }
+                                                                },
+                                                                "type": "object"
+                                                            },
+                                                            "created": {
+                                                                "properties": {
+                                                                    "type": {
+                                                                        "type": "string"
+                                                                    }
+                                                                },
+                                                                "type": "object"
+                                                            },
+                                                            "id": {
+                                                                "properties": {
+                                                                    "type": {
+                                                                        "type": "string"
+                                                                    }
+                                                                },
+                                                                "type": "object"
+                                                            },
+                                                            "model": {
+                                                                "properties": {
+                                                                    "type": {
+                                                                        "type": "string"
+                                                                    }
+                                                                },
+                                                                "type": "object"
+                                                            },
+                                                            "object": {
+                                                                "properties": {
+                                                                    "type": {
+                                                                        "type": "string"
+                                                                    }
+                                                                },
+                                                                "type": "object"
+                                                            },
+                                                            "usage": {
+                                                                "properties": {
+                                                                    "properties": {
+                                                                        "properties": {
+                                                                            "completion_tokens": {
+                                                                                "properties": {
+                                                                                    "type": {
+                                                                                        "type": "string"
+                                                                                    }
+                                                                                },
+                                                                                "type": "object"
+                                                                            },
+                                                                            "prompt_tokens": {
+                                                                                "properties": {
+                                                                                    "type": {
+                                                                                        "type": "string"
+                                                                                    }
+                                                                                },
+                                                                                "type": "object"
+                                                                            },
+                                                                            "total_tokens": {
+                                                                                "properties": {
+                                                                                    "type": {
+                                                                                        "type": "string"
+                                                                                    }
+                                                                                },
+                                                                                "type": "object"
+                                                                            }
+                                                                        },
+                                                                        "type": "object"
+                                                                    },
+                                                                    "type": {
+                                                                        "type": "string"
+                                                                    }
+                                                                },
+                                                                "type": "object"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    },
+                                                    "type": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "runAfter": {
+                                            "Reply_to_Goals": [
+                                                "Succeeded"
+                                            ]
+                                        },
+                                        "type": "ParseJson"
+                                    },
+                                    "Parse_Goals": {
+                                        "inputs": {
+                                            "content": "@body('ChatGPT_Response')?['choices'][0]['message']['function_call']['arguments']",
+                                            "schema": {
+                                                "properties": {
+                                                    "goals": {
+                                                        "items": {
+                                                            "properties": {
+                                                                "goal_check-in_days": {
+                                                                    "type": "string"
+                                                                },
+                                                                "goal_description": {
+                                                                    "type": "string"
+                                                                },
+                                                                "goal_title": {
+                                                                    "type": "string"
+                                                                }
+                                                            },
+                                                            "required": [
+                                                                "goal_title",
+                                                                "goal_description",
+                                                                "goal_check-in_days"
+                                                            ],
+                                                            "type": "object"
+                                                        },
+                                                        "type": "array"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "runAfter": {},
+                                        "type": "ParseJson"
+                                    },
+                                    "Reply_to_Goals": {
+                                        "inputs": {
+                                            "body": {
+                                                "frequency_penalty": 0,
+                                                "max_tokens": 500,
+                                                "messages": "@union(outputs('Chat_System_Prompt'),triggerBody()?['chatHistory'])",
+                                                "presence_penalty": 0,
+                                                "stop": null,
+                                                "temperature": 0.75,
+                                                "top_p": 0.95
+                                            },
+                                            "headers": {
+                                                "Content-Type": "application/json",
+                                                "api-key": "@body('OpenAI_GPT4_Key')?['value']"
+                                            },
+                                            "method": "POST",
+                                            "uri": "https://dccgpt4.openai.azure.com/openai/deployments/dcc-gpt4/chat/completions?api-version=2023-08-01-preview"
+                                        },
+                                        "runAfter": {
+                                            "For_each": [
+                                                "Succeeded"
+                                            ]
+                                        },
+                                        "type": "Http"
+                                    },
+                                    "Response_Functions": {
+                                        "inputs": {
+                                            "body": {
+                                                "function_data": "@variables('goalsArray')",
+                                                "goal_action": "add",
+                                                "response": "@variables('GPT-Response')",
+                                                "status": "ok"
+                                            },
+                                            "statusCode": 200
+                                        },
+                                        "kind": "Http",
+                                        "runAfter": {
+                                            "Set_variable_3": [
+                                                "Succeeded"
+                                            ]
+                                        },
+                                        "type": "Response"
+                                    },
+                                    "Set_variable_3": {
+                                        "inputs": {
+                                            "name": "GPT-Response",
+                                            "value": "@{body('Goals_Reply')?['choices'][0]['message']['content']}"
+                                        },
+                                        "runAfter": {
+                                            "Goals_Reply": [
+                                                "Succeeded"
+                                            ]
+                                        },
+                                        "type": "SetVariable"
+                                    }
+                                },
+                                "case": "create_goals"
+                            }
+                        },
+                        "default": {
+                            "actions": {}
+                        },
+                        "expression": "@body('ChatGPT_Response')?['choices'][0]['message']['function_call']['name']",
+                        "runAfter": {},
+                        "type": "Switch"
+                    }
+                },
+                "else": {
+                    "actions": {
+                        "Response": {
+                            "inputs": {
+                                "body": {
+                                    "response": "@body('ChatGPT_Response')?['choices'][0]['message']['content']",
+                                    "status": "ok"
+                                },
+                                "statusCode": 200
+                            },
+                            "kind": "Http",
+                            "runAfter": {},
+                            "type": "Response"
+                        }
+                    }
+                },
+                "expression": {
+                    "and": [
+                        {
+                            "equals": [
+                                "@body('ChatGPT_Response')?['choices'][0]['finish_reason']",
+                                "function_call"
+                            ]
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "ChatGPT_Response": [
+                        "Succeeded"
+                    ]
+                },
+                "type": "If"
+            },
+            "OpenAI_GPT4_Key": {
+                "inputs": {
+                    "host": {
+                        "connection": {
+                            "name": "@parameters('$connections')['keyvault']['connectionId']"
+                        }
+                    },
+                    "method": "get",
+                    "path": "/secrets/@{encodeURIComponent('OpenAI-GPT4')}/value"
+                },
+                "runAfter": {},
+                "type": "ApiConnection"
+            },
+            "goalsArray": {
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "goalsArray",
+                            "type": "array"
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "GPT-Response": [
+                        "Succeeded"
+                    ]
+                },
+                "type": "InitializeVariable"
+            }
+        },
+        "contentVersion": "1.0.0.0",
+        "outputs": {},
+        "parameters": {
+            "$connections": {
+                "defaultValue": {},
+                "type": "Object"
+            }
+        },
+        "triggers": {
+            "manual": {
+                "inputs": {
+                    "method": "POST",
+                    "schema": {
+                        "properties": {
+                            "chatHistory": {
+                                "items": {
+                                    "properties": {
+                                        "content": {
+                                            "type": "string"
+                                        },
+                                        "role": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "required": [
+                                        "content",
+                                        "role"
+                                    ],
+                                    "type": "object"
+                                },
+                                "type": "array"
+                            },
+                            "chatType": {
+                                "type": "string"
+                            },
+                            "gcGoals": {
+                                "items": {
+                                    "properties": {
+                                        "goal_check_in_days": {
+                                            "type": "string"
+                                        },
+                                        "goal_description": {
+                                            "type": "string"
+                                        },
+                                        "goal_id": {
+                                            "type": "string"
+                                        },
+                                        "goal_status": {
+                                            "type": "string"
+                                        },
+                                        "goal_title": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                },
+                                "type": [
+                                    "array",
+                                    "null"
+                                ]
+                            },
+                            "gcUser": {
+                                "properties": {
+                                    "": {
+                                        "type": "string"
+                                    },
+                                    "age": {
+                                        "type": "string"
+                                    },
+                                    "bible": {
+                                        "type": "string"
+                                    },
+                                    "children": {
+                                        "type": "string"
+                                    },
+                                    "church_attendance": {
+                                        "type": "string"
+                                    },
+                                    "email_address": {
+                                        "type": "string"
+                                    },
+                                    "first_name": {
+                                        "type": "string"
+                                    },
+                                    "gender": {
+                                        "type": "string"
+                                    },
+                                    "give": {
+                                        "type": "string"
+                                    },
+                                    "last_name": {
+                                        "type": "string"
+                                    },
+                                    "marital": {
+                                        "type": "string"
+                                    },
+                                    "phone_number": {
+                                        "type": "string"
+                                    },
+                                    "prayer": {
+                                        "type": "string"
+                                    },
+                                    "small_group": {
+                                        "type": "string"
+                                    },
+                                    "time_as_christian": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        },
+                        "type": "object"
+                    }
+                },
+                "kind": "Http",
+                "type": "Request"
+            }
+        }
+    },
+    "parameters": {
+        "$connections": {
+            "value": {
+                "keyvault": {
+                    "connectionId": "/subscriptions/18060ae6-2a4a-4fb3-89ad-c6a7f2afbad7/resourceGroups/MP_Logic_Apps/providers/Microsoft.Web/connections/keyvault-1",
+                    "connectionName": "keyvault-1",
+                    "connectionProperties": {
+                        "authentication": {
+                            "type": "ManagedServiceIdentity"
+                        }
+                    },
+                    "id": "/subscriptions/18060ae6-2a4a-4fb3-89ad-c6a7f2afbad7/providers/Microsoft.Web/locations/southcentralus/managedApis/keyvault"
+                }
+            }
+        }
+    }
+}
