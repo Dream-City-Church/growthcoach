@@ -1,4 +1,4 @@
-var gcVersion = "2023.10.7.39";
+var gcVersion = "2023.39";
 var gcUserJson = loadGrowthCoachUser();
 var gcUserGoals = loadGrowthCoachGoals();
 var gcDailyReflection = JSON.parse(localStorage.getItem("gcDailyReflection"));
