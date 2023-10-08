@@ -41,8 +41,11 @@ function growthCoachLaunch(action){
         var goalsCard = document.getElementById("goals-card");
         gcUserGoals.forEach(function(goal) {
             console.log('adding goal');
-            goalsCard.innerHTML += `<div class="goal" id="${goal.goal_id}" class="goal-${goal.goal_id}"><span class="goal-title">${goal.goal_title}</span><br /><span class="goal-checkin">Next check in: ${goal.goal_check_in_days} days</span></div>`;
+            if(goal.goal_status === "active") {
+                goalsCard.innerHTML += `<div class="goal" id="${goal.goal_id}" class="goal-${goal.goal_id}"><span class="goal-title">${goal.goal_title}</span><br /><span class="goal-checkin">Next check in: ${goal.goal_check_in_days} days</span></div>`;
+            }
         });
+
 
         // add event listener to each goal to detect click
         var goals = document.querySelectorAll('.goal');
@@ -92,6 +95,11 @@ function growthCoachGoals(goalActionType,goalArray) {
         saveGrowthCoachGoals(gcUserGoals);
     } else if(goalActionType == "edit") {
     } else if(goalActionType == "complete") {
+        gcUserGoals.forEach(function(goal){
+            if(goal.goal_id === goalArray) {
+                goal.goal_status = "complete";
+            }
+        })
     } else if(goalActionType == "delete") {
     }
 }
@@ -202,9 +210,27 @@ function sendChat(chatInputTextValue,chatType) {
         </div>`);
             chatWindow.scrollTop = chatWindowContent.scrollHeight;
         }
+
         if(data.goal_action == "add") {
             // save goals to localStorage
             growthCoachGoals("add",data.function_data);
+
+            // remove chat input window and replace with close button
+            document.getElementById("chatInput").innerHTML = `<button id="chatClose" style="width: 100%;">Close</button>`;
+            
+            // add event listener onto close button
+            var chatClose = document.getElementById("chatClose");
+            chatClose.addEventListener("click", function(){
+                console.log('close button click detected');
+                // remove chat window
+
+                growthCoachLaunch('homeScreen');
+            });
+        }
+
+        if(data.goal_action == "complete") {
+            // save goals to localStorage
+            growthCoachGoals("complete",data.function_data);
 
             // remove chat input window and replace with close button
             document.getElementById("chatInput").innerHTML = `<button id="chatClose" style="width: 100%;">Close</button>`;
