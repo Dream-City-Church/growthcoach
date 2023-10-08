@@ -226,8 +226,10 @@ div#salutation {
 
 div#chat-card {
   position: fixed;
-  max-width: 600px;
-  width: 50%;
+  max-width: 535px;
+  min-width: 525px;
+  width: 40%;
+  margin: 1rem auto;
   z-index: 990;
   height: 90vh;
   bottom: -90vh;
@@ -432,8 +434,10 @@ iv#spacer-card {
   }
   div#chat-card {
     width: 94%;
+    margin: 2rem auto;
   }
   .tab h2 {
     margin-top: 0;
+    
   }
 }
