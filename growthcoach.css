@@ -53,6 +53,12 @@ h3 {
     width: 70%;
     min-width: 300px;
   }
+
+  .tab h2 {
+    color: white;
+    text-align: center;
+    width: 100%;
+}
   
   /* Style the input fields */
   input {
@@ -64,6 +70,11 @@ h3 {
     border: none;
     border: 1px solid var(--text-gray);
   }
+
+  img#logo-welcome {
+    width: 50%;
+    margin: 2rem 25%;
+  }
   
   /* Mark input boxes that gets an error on validation: */
   input.invalid {
@@ -74,6 +85,13 @@ h3 {
   .tab {
     display: none;
   }
+
+  .tab p {
+    color: white;
+    font-size: 1.1rem;
+    font-weight: bold;
+    line-height: 1.5rem;
+}
   
   /* Make circles that indicate the steps of the form: */
   .step {
@@ -129,6 +147,10 @@ div#chatInput {
 div#chatWindow {
   height: 95vh;
   overflow: hidden;
+}
+
+div#chatWindow::-webkit-scrollbar {
+  display: none;
 }
 
 div#salutation {
@@ -272,4 +294,62 @@ div#passage_question {
 
 div#reflection {
   margin: 1rem;
+}
+
+
+/*Text Loading Indicator*/
+.lds-ellipsis {
+  display: inline-block;
+  position: relative;
+  width: 80px;
+  margin: 1rem auto;
+}
+.lds-ellipsis div {
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  top: -5px;
+  border-radius: 50%;
+  background: var(--secondary);
+  animation-timing-function: cubic-bezier(0, 1, 1, 0);
+}
+.lds-ellipsis div:nth-child(1) {
+  left: 8px;
+  animation: lds-ellipsis1 0.6s infinite;
+}
+.lds-ellipsis div:nth-child(2) {
+  left: 8px;
+  animation: lds-ellipsis2 0.6s infinite;
+}
+.lds-ellipsis div:nth-child(3) {
+  left: 32px;
+  animation: lds-ellipsis2 0.6s infinite;
+}
+.lds-ellipsis div:nth-child(4) {
+  left: 56px;
+  animation: lds-ellipsis3 0.6s infinite;
+}
+@keyframes lds-ellipsis1 {
+  0% {
+    transform: scale(0);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+@keyframes lds-ellipsis3 {
+  0% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(0);
+  }
+}
+@keyframes lds-ellipsis2 {
+  0% {
+    transform: translate(0, 0);
+  }
+  100% {
+    transform: translate(24px, 0);
+  }
 }

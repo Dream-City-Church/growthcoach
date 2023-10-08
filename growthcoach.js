@@ -17,7 +17,7 @@ function growthCoachLaunch(action){
         var gcHomeLayout = `
             <div id="salutation"><h2>Hi, ${gcUserJson.first_name}!</h2></div><div id="logo-container"><img id="logo" src="./growthcoach-logo-full.png" /></div>
             <div id="goals-card" class="card"><h3>Your Goals</h3></div>
-            <div id="daily-reflection-card" class="card"><h3>Daily Reflection</h3></div>
+            <div id="daily-reflection-card" class="card"><h3>Daily Reflection</h3><div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div></div>
             <div id="chat-card" class="card"><div id="chat-card-header" data="up"><span class="arrow up"></span>Chat with Growth Coach<span class="arrow up"></span></div></div>
             `;
 
@@ -116,10 +116,10 @@ function startChat(chatType,chatMessage){
         var arrowUps = document.querySelectorAll('.arrow.up')
         arrowUps.forEach((arrowUp) => {arrowUp.classList.replace('up','down');})
         document.getElementById("chat-card-header").setAttribute("data","down");
-        document.getElementById("chat-card").insertAdjacentHTML("beforeend", `<div id="chatWindow" style="height: 100%; overflow-y: scroll; overflow-x: hidden;"></div><div id="chatInput"></div>`);
+        document.getElementById("chat-card").insertAdjacentHTML("beforeend", `<div id="chatWindow" style="overflow-y: scroll; overflow-x: hidden;"></div><div id="chatInput"></div>`);
         document.getElementById("chat-card").style.bottom = 0;
     } else {
-        document.getElementById("growthcoach").innerHTML += `<div id="chatWindow" style="height: 100%; overflow-y: scroll; overflow-x: hidden;"></div><div id="chatInput"></div>`;
+        document.getElementById("growthcoach").innerHTML += `<div id="chatWindow" style="overflow-y: scroll; overflow-x: hidden;"></div><div id="chatInput"></div>`;
     }
     var chatWindow = document.getElementById("chatWindow");
     var chatInput = document.getElementById("chatInput");
@@ -127,7 +127,7 @@ function startChat(chatType,chatMessage){
 
     // Create the chat window
     chatWindow.innerHTML = `
-        <div id="chatWindowContent" style="display: flex; flex-direction: column;"></div>`;
+        <div id="chatWindowContent" style="display: flex; flex-direction: column;"><div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div></div>`;
 
     // Create the chat input and send button
     chatInput.innerHTML = `
@@ -160,7 +160,7 @@ function startChat(chatType,chatMessage){
             </div>
         </div>
     </div>
-    <div id="loading-indicator"></div>`) ;
+    <div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>`) ;
 
         chatWindow.scrollTop = chatWindow.scrollHeight;
         
@@ -185,7 +185,7 @@ function startChat(chatType,chatMessage){
                 </div>
             </div>
         </div>
-        <div id="loading-indicator"></div>`) ;
+        <div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>`) ;
 
             chatWindow.scrollTop = chatWindow.scrollHeight;
             
@@ -232,6 +232,7 @@ function sendChat(chatInputTextValue,chatType) {
             currentChatHistory.push({"content":data.response,"role":"assistant"});
             //update chat window
             var chatWindowContent = document.getElementById("chatWindowContent");
+            document.querySelector('.lds-ellipsis').remove();
             chatWindowContent.insertAdjacentHTML("beforeend",`<div style="width: 100%; display: flex; flex-direction: column;">
             <div style="width: 100%;">
                 <div class="botChatMessage">
@@ -282,6 +283,7 @@ function dailyReflection() {
             gcDailyReflection = null;
         } else {
             console.log("load existing daily reflection");
+            document.querySelector('.lds-ellipsis').remove();
             document.getElementById("daily-reflection-card").insertAdjacentHTML("beforeend",`<div id="bible-passage"><a href="https://www.biblegateway.com/passage/?search=${gcDailyReflection.bible_passage}" target="_blank">${gcDailyReflection.bible_passage}</a></div><div id="passage_summary">${gcDailyReflection.passage_summary}</div><div id="passage_question">${gcDailyReflection.passage_question}</div><div id="reflection">${gcDailyReflection.reflection}</div>`);
         }
     }
@@ -312,7 +314,7 @@ function dailyReflection() {
                     "reflection": data.reflection
                 };
                 localStorage.setItem("gcDailyReflection", JSON.stringify(gcDailyReflection));
-
+                document.querySelector('.lds-ellipsis').remove();
                 document.getElementById("daily-reflection-card").insertAdjacentHTML("beforeend",`<div id="bible-passage"><a href="https://www.biblegateway.com/passage/?search=${data.bible_passage}" target="_blank">${data.bible_passage}</a></div><div id="passage_summary">${data.passage_summary}</div><div id="passage_question">${data.passage_question}</div><div id="reflection">${data.reflection}</div>`);
             }
         })
@@ -419,8 +421,14 @@ function showTab(n) {
 var gcNewUserForm = `
     <form id="regForm" action="">
 
+    <div class="tab"><h2>Hi, I'm Growth Coach!</h2>
+        <img id="logo-welcome" src="./growthcoach-logo-full.png" />
+        <p>I'm here to help you grow in your faith. Let's get to know each other a little better.</p>
+        <p>Answer as best as you can. I'll use your answers to build a custom plan for you.</p>
+        </div>
+
     <!-- One "tab" for each step in the form: -->
-    <div class="tab"><h3>Some Basic Info</h3>
+    <div class="tab"><h3>Let's start with some basic information</h3>
         <p><input placeholder="First Name" oninput="this.className = ''" name="first_name"></p>
         <p><input placeholder="Last Name" oninput="this.className = ''" name="last_name"></p>
         <p><input placeholder="Email Address" oninput="this.className = ''" name="email_address"></p>
