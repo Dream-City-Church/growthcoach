@@ -433,4 +433,7 @@ iv#spacer-card {
   div#chat-card {
     width: 94%;
   }
+  .tab h2 {
+    margin-top: 0;
+  }
 }
