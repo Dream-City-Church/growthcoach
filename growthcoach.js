@@ -12,7 +12,7 @@ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTH
 WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-var gcVersion = "2023.39";
+var gcVersion = "2023.42";
 var gcUserJson = loadGrowthCoachUser();
 var gcUserGoals = loadGrowthCoachGoals();
 var gcDailyReflection = JSON.parse(localStorage.getItem("gcDailyReflection"));
