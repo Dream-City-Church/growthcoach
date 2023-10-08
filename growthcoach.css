@@ -14,11 +14,12 @@ body {
   background-repeat: no-repeat;
   height: 100vh;
   width: 100%;
-  overflow: hidden;
+  /* overflow: hidden; */
+  overflow-y: scroll;
 }
 
 div#version-id {
-  position: absolute;
+  position: fixed;
   z-index: 999;
   left: 10px;
   bottom: 10px;
@@ -55,8 +56,6 @@ h3 {
   max-width:600px;
   width: 100%;
   margin: 0 auto;
-  overflow-y: scroll;
-  overflow: scroll;
 }
 
 /* Style the form */
@@ -201,8 +200,8 @@ div#salutation {
 }
 
 .card {
-  width: 100%;
-  padding: 1rem 2rem 1rem 1rem;
+  width: 94%;
+  padding: 3% 3%;
   background-color: white;
   border-radius: 1rem;
   min-height: 1rem;
@@ -212,8 +211,9 @@ div#salutation {
 }
 
 div#chat-card {
-  position: absolute;
+  position: fixed;
   max-width: 600px;
+  width: 50%;
   z-index: 990;
   height: 90vh;
   bottom: -90vh;
@@ -396,16 +396,27 @@ div#reflection {
   }
 }
 
+iv#spacer-card {
+  height: 2rem;
+}
+
 /* mobile styling */
 @media only screen and (max-width: 600px) {
   .card {
-    padding: 5%;
+    padding: 5% 5% 2% 5%;
     width: 90%;
+    margin-bottom: 2rem;
   }
   .goal {
     margin: 1.5rem;
   }
   #chatInputText {
     width:60%;
+  }
+  div#spacer-card {
+    height: 1rem;
+  }
+  div#chat-card {
+    width: 94%;
   }
 }

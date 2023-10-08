@@ -26,6 +26,7 @@ function growthCoachLaunch(action){
             <div id="salutation"><h2>Hi, ${gcUserJson.first_name}!</h2></div><div id="logo-container"><img id="logo" src="./growthcoach-logo-full.png" alt="Growth Coach logo" /></div>
             <div id="goals-card" class="card"><h3>Your Goals</h3></div>
             <div id="daily-reflection-card" class="card"><h3>Daily Reflection</h3><div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div></div>
+            <div id="spacer-card"></div>
             <div id="chat-card" class="card"><div id="chat-card-header" data="up"><span class="arrow up"></span>Chat with Growth Coach<span class="arrow up"></span></div></div>
             `;
 
