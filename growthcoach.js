@@ -111,6 +111,7 @@ function growthCoachGoals(goalActionType,goalArray) {
         const index = gcUserGoals.map(id => id.goal_id).indexOf(goalArray);
         if(index > -1) {
             gcUserGoals.splice(index,1);
+            document.querySelector('[id="'+goalArray+'"]').remove();
         }
         saveGrowthCoachGoals(gcUserGoals);
     } else if(goalActionType == "delete") {
