@@ -190,7 +190,7 @@ button#chatSend {
 div#chatInput {
   position: absolute;
   z-index: 999;
-  max-width: 600px;
+  max-width: 560px;
   width: 100%;
   bottom: 5px;
 }
