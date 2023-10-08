@@ -71,6 +71,23 @@ h3 {
     border: 1px solid var(--text-gray);
   }
 
+  input[type="radio"] {
+    position: fixed;
+    opacity: 0;
+    pointer-events: none;
+}
+
+input[type="checkbox"] {
+  position: fixed;
+  opacity: 0;
+  pointer-events: none;
+}
+
+:checked+label {
+  background-color: var(--secondary) !important;
+  color: white;
+}
+
   img#logo-welcome {
     width: 50%;
     margin: 2rem 25%;
@@ -124,6 +141,10 @@ h3 {
     border: none;
     border-radius: 0.25rem;
     cursor: pointer;
+}
+
+#regForm button {
+  margin-top: 2rem;
 }
 
 #regForm label {

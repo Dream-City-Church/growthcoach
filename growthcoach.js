@@ -11,6 +11,12 @@ function growthCoachLaunch(action){
     if((gcUserJson == null || gcUserJson == '') & action != 'homeScreen'){
         // New User Page
         document.getElementById("growthcoach").innerHTML = gcNewUserForm;
+        document.getElementById("regForm").addEventListener("keypress", function(event){
+            if (event.key === "Enter") {
+                nextPrev(1);
+            }
+        }
+        );
         showTab(currentTab); // Display the current tab
     }else{
         // Load Main App Page
@@ -439,70 +445,71 @@ var gcNewUserForm = `
     </div>
 
     <div class="tab"><h3>What is your gender?</h3>
-        <label><input type="radio" value="male" oninput="this.className = ''" name="gender" required>Male</label>
-        <label><input type="radio" value="female" oninput="this.className = ''" name="gender">Female</label>
-        <label><input type="radio" value="not provided" oninput="this.className = ''" name="gender">Prefer not to answer</label>
+        <input type="radio" id="gender-male" value="male" oninput="this.className = ''" name="gender" required><label for="gender-male">Male</label>
+        <input type="radio" id="gender-female" value="female" oninput="this.className = ''" name="gender"><label for="gender-female">Female</label>
+        <input type="radio" id="gender-none" value="not provided" oninput="this.className = ''" name="gender"><label for="gender-none">Prefer not to answer</label>
     </div>
 
     <div class="tab"><h3>What is your marital status?</h3>
-        <label><input type="radio" value="single" oninput="this.className = ''" name="marital" required>Single</label>
-        <label><input type="radio" value="married" oninput="this.className = ''" name="marital">Married</label>
-        <label><input type="radio" value="widowed" oninput="this.className = ''" name="marital">Widowed</label>
-        <label><input type="radio" value="divorced/seperated" oninput="this.className = ''" name="marital">Divorced/Seperated</label>
+        <input id="marital-single" type="radio" value="single" oninput="this.className = ''" name="marital" required><label for="marital-single">Single</label>
+        <input id="marital-married" type="radio" value="married" oninput="this.className = ''" name="marital"><label for="marital-married">Married</label>
+        <input id="marital-widowed" type="radio" value="widowed" oninput="this.className = ''" name="marital"><label for="marital-widowed">Widowed</label>
+        <input id="marital-divorced" type="radio" value="divorced/seperated" oninput="this.className = ''" name="marital"><label for="marital-divorced">Divorced/Seperated</label>
     </div>
 
     <div class="tab"><h3>Do you have any children?</h3>
-        <label><input type="checkbox" value="kids under 10" oninput="this.className = ''" name="children" required>Yes, under 10</label>
-        <label><input type="checkbox" value="kids 10-18" oninput="this.className = ''" name="children">Yes, 10-18</label>
-        <label><input type="checkbox" value="kids out of the house" oninput="this.className = ''" name="children">Yes, out of the house</label>
+        <p>You can select multiple options.</p>
+        <input id="children-under10" type="checkbox" value="kids under 10" oninput="this.className = ''" name="children" required><label for="children-under10">Yes, under 10</label>
+        <input id="children-10to18" type="checkbox" value="kids 10-18" oninput="this.className = ''" name="children"><label for="children-10to18">Yes, 10-18</label>
+        <input id="children-older" type="checkbox" value="kids out of the house" oninput="this.className = ''" name="children"><label for="children-older">Yes, out of the house</label>
     </div>
 
     <div class="tab"><h3>How long have you been a Christian?</h3>
-        <label><input type="radio" value="not a Christian" oninput="this.className = ''" name="time_as_christian" required>Not a Christian</label>
-        <label><input type="radio" value="less than 1 year" oninput="this.className = ''" name="time_as_christian">Less than 1 year</label>
-        <label><input type="radio" value="1-5 years" oninput="this.className = ''" name="time_as_christian">1-5 years</label>
-        <label><input type="radio" value="5+ years" oninput="this.className = ''" name="time_as_christian">5+ years</label>
+        <input id="christian-1" type="radio" value="not a Christian" oninput="this.className = ''" name="time_as_christian" required><label for="christian-1">Not a Christian</label>
+        <input id="christian-2" type="radio" value="less than 1 year" oninput="this.className = ''" name="time_as_christian"><label for="christian-2">Less than 1 year</label>
+        <input id="christian-3" type="radio" value="1-5 years" oninput="this.className = ''" name="time_as_christian"><label for="christian-3">1-5 years</label>
+        <input id="christian-4" type="radio" value="5+ years" oninput="this.className = ''" name="time_as_christian"><label for="christian-4">5+ years</label>
     </div>
 
     <div class="tab"><h3>How often do you attend church?</h3>
-        <label><input type="radio" value="infrequently" oninput="this.className = ''" name="church_attendance" required>Infrequently</label>
-        <label><input type="radio" value="a few times a year" oninput="this.className = ''" name="church_attendance">A few times a year</label>
-        <label><input type="radio" value="once a month" oninput="this.className = ''" name="church_attendance">Once a month</label>
-        <label><input type="radio" value="couple times a month" oninput="this.className = ''" name="church_attendance">Couple times a month</label>
-        <label><input type="radio" value="weekly" oninput="this.className = ''" name="church_attendance">Weekly</label>
+        <input id="church-1" type="radio" value="infrequently" oninput="this.className = ''" name="church_attendance" required><label for="church-1">Infrequently</label>
+        <input id="church-2" type="radio" value="a few times a year" oninput="this.className = ''" name="church_attendance"><label for="church-2">A few times a year</label>
+        <input id="church-3" type="radio" value="once a month" oninput="this.className = ''" name="church_attendance"><label for="church-3">Once a month</label>
+        <input id="church-4" type="radio" value="couple times a month" oninput="this.className = ''" name="church_attendance"><label for="church-4">Couple times a month</label>
+        <input id="church-5" type="radio" value="weekly" oninput="this.className = ''" name="church_attendance"><label for="church-5">Weekly</label>
     </div>
 
     <div class="tab"><h3>How often do you read the bible?</h3>
-        <label><input type="radio" value="infrequently" oninput="this.className = ''" name="bible" required>Infrequently</label>
-        <label><input type="radio" value="a few times a year" oninput="this.className = ''" name="bible">A few times a year</label>
-        <label><input type="radio" value="once a month" oninput="this.className = ''" name="bible">Once a month</label>
-        <label><input type="radio" value="couple times a month" oninput="this.className = ''" name="bible">Couple times a month</label>
-        <label><input type="radio" value="weekly" oninput="this.className = ''" name="bible">Weekly</label>
-        <label><input type="radio" value="daily" oninput="this.className = ''" name="bible">Daily</label>
+        <input id="bible-1" type="radio" value="infrequently" oninput="this.className = ''" name="bible" required><label for="bible-1">Infrequently</label>
+        <input id="bible-2" type="radio" value="a few times a year" oninput="this.className = ''" name="bible"><label for="bible-2">A few times a year</label>
+        <input id="bible-3" type="radio" value="once a month" oninput="this.className = ''" name="bible"><label for="bible-3">Once a month</label>
+        <input id="bible-4" type="radio" value="couple times a month" oninput="this.className = ''" name="bible"><label for="bible-4">Couple times a month</label>
+        <input id="bible-5" type="radio" value="weekly" oninput="this.className = ''" name="bible"><label for="bible-5">Weekly</label>
+        <input id="bible-6" type="radio" value="daily" oninput="this.className = ''" name="bible"><label for="bible-6">Daily</label>
     </div>
 
     <div class="tab"><h3>How often do you pray?</h3>
-        <label><input type="radio" value="infrequently" oninput="this.className = ''" name="prayer" required>Infrequently</label>
-        <label><input type="radio" value="a few times a year" oninput="this.className = ''" name="prayer">A few times a year</label>
-        <label><input type="radio" value="once a month" oninput="this.className = ''" name="prayer">Once a month</label>
-        <label><input type="radio" value="couple times a month" oninput="this.className = ''" name="prayer">Couple times a month</label>
-        <label><input type="radio" value="weekly" oninput="this.className = ''" name="prayer">Weekly</label>
-        <label><input type="radio" value="daily" oninput="this.className = ''" name="prayer">Daily</label>
+        <input id="prayer-1" type="radio" value="infrequently" oninput="this.className = ''" name="prayer" required><label for="prayer-1">Infrequently</label>
+        <input id="prayer-2" type="radio" value="a few times a year" oninput="this.className = ''" name="prayer"><label for="prayer-2">A few times a year</label>
+        <input id="prayer-3" type="radio" value="once a month" oninput="this.className = ''" name="prayer"><label for="prayer-3">Once a month</label>
+        <input id="prayer-4" type="radio" value="couple times a month" oninput="this.className = ''" name="prayer"><label for="prayer-4">Couple times a month</label>
+        <input id="prayer-5" type="radio" value="weekly" oninput="this.className = ''" name="prayer"><label for="prayer-5">Weekly</label>
+        <input id="prayer-6" type="radio" value="daily" oninput="this.className = ''" name="prayer"><label for="prayer-6">Daily</label>
     </div>
 
     <div class="tab"><h3>Are you in a small group?</h3>
-        <label><input type="radio" value="yes" oninput="this.className = ''" name="small_group" required>Yes</label>
-        <label><input type="radio" value="no" oninput="this.className = ''" name="small_group">No</label>
+        <input id="group-1" type="radio" value="yes" oninput="this.className = ''" name="small_group" required><label for="group-1">Yes</label>
+        <input id="group-2" type="radio" value="no" oninput="this.className = ''" name="small_group"><label for="group-2">No</label>
     </div>
 
     <div class="tab"><h3>Do you serve or volunteer?</h3>
-        <label><input type="radio" value="yes" oninput="this.className = ''" name="volunteer" required>Yes</label>
-        <label><input type="radio" value="no" oninput="this.className = ''" name="volunteer">No</label>
+        <input id="volunteer-1" type="radio" value="yes" oninput="this.className = ''" name="volunteer" required><label for="volunteer-1">Yes</label>
+        <input id="volunteer-2" type="radio" value="no" oninput="this.className = ''" name="volunteer"><label for="volunteer-2">No</label>
     </div>
 
     <div class="tab"><h3>Do you give financially to a church or ministry?</h3>
-        <label><input type="radio" value="yes" oninput="this.className = ''" name="give" required>Yes</label>
-        <label><input type="radio" value="no" oninput="this.className = ''" name="give">No</label>
+        <input id="give-1" type="radio" value="yes" oninput="this.className = ''" name="give" required><label for="give-1">Yes</label>
+        <input id="give-2" type="radio" value="no" oninput="this.className = ''" name="give"><label for="give-2">No</label>
     </div>
 
     <div style="overflow:auto;">
